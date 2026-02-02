@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Enums
+enum UserType {
+  CONSUMER
+  PARTNER
+}
+
+enum SubscriptionTier {
+  BASIC
+  PREMIUM
+}
+
+enum PartnerType {
+  BAR
+  RESTAURANT
+  PUB
+  CAFE
+  HOTEL
+  OTHER
+}
+
+enum EquipmentStatus {
+  NORMAL
+  LOW
+  URGENT
+}
+
+enum ProductCategory {
+  LAGER
+  PILSNER
+  WHEAT
+  IPA
+  STOUT
+  ALE
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// Models
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  name             String
+  type             UserType          @default(CONSUMER)
+  tasteScore       Int?
+  subscriptionTier SubscriptionTier?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  tasteData        TasteData[]
+  consumerOrders   ConsumerOrder[]
+}
+
+model Partner {
+  id               String         @id @default(cuid())
+  name             String
+  type             String
+  monthlyBeersSold Int            @default(0)
+  monthlyRevenue   Float          @default(0)
+  customerCount    Int            @default(0)
+  rating           Float          @default(0)
+  isPro            Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  equipment        Equipment[]
+  orders           PartnerOrder[]
+}
+
+model Equipment {
+  id             String          @id @default(cuid())
+  name           String
+  style          String?
+  category       String
+  stockLevel     Int             @default(100)
+  status         EquipmentStatus @default(NORMAL)
+  partnerId      String
+  partner        Partner         @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  lastRefillDate DateTime        @default(now())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Product {
+  id                 String              @id @default(cuid())
+  name               String
+  category           String
+  style              String?
+  volume             String
+  price              Float
+  abv                String?
+  imageUrl           String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  partnerOrderItems  PartnerOrderItem[]
+  consumerOrderItems ConsumerOrderItem[]
+}
+
+model PartnerOrder {
+  id                String             @id @default(cuid())
+  partnerId         String
+  partner           Partner            @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  status            OrderStatus        @default(PENDING)
+  totalAmount       Float
+  estimatedDelivery DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  items             PartnerOrderItem[]
+}
+
+model PartnerOrderItem {
+  id        String       @id @default(cuid())
+  orderId   String
+  order     PartnerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product      @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model ConsumerOrder {
+  id                String              @id @default(cuid())
+  userId            String
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status            OrderStatus         @default(PENDING)
+  totalAmount       Float
+  estimatedDelivery DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  items             ConsumerOrderItem[]
+}
+
+model ConsumerOrderItem {
+  id        String        @id @default(cuid())
+  orderId   String
+  order     ConsumerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product       @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model TasteData {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       DateTime @default(now())
+  bitterness Int?
+  sweetness  Int?
+  aroma      Int?
+  body       Int?
+  tasteScore Int
+  createdAt  DateTime @default(now())
+}
