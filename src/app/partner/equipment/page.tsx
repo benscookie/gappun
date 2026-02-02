@@ -4,15 +4,6 @@ import { PartnerHeader } from '@/components/partner/Header'
 import { mockEquipments, mockPartner } from '@/data/mockData'
 import { useState } from 'react'
 
-const categoryIcons: Record<string, string> = {
-  LAGER: '🍺',
-  PILSNER: '🍻',
-  WHEAT: '🌾',
-  IPA: '🧡',
-  STOUT: '🖤',
-  ALE: '🍯',
-}
-
 export default function EquipmentPage() {
   const partner = mockPartner
   const equipment = mockEquipments
@@ -21,15 +12,6 @@ export default function EquipmentPage() {
   const filteredEquipment = filter === 'all'
     ? equipment
     : equipment.filter(e => e.status.toLowerCase() === filter)
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'NORMAL': return 'bg-green-100 text-green-700'
-      case 'LOW': return 'bg-yellow-100 text-yellow-700'
-      case 'URGENT': return 'bg-red-100 text-red-700'
-      default: return 'bg-gray-100 text-gray-700'
-    }
-  }
 
   const getStatusText = (status: string) => {
     switch (status) {
@@ -51,14 +33,14 @@ export default function EquipmentPage() {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                   filter === status
-                    ? 'bg-amber-500 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 {status === 'all' ? '전체' : getStatusText(status.toUpperCase())}
-                <span className="ml-2 bg-white/20 px-2 py-0.5 rounded-full text-xs">
+                <span className="ml-1.5 text-xs opacity-70">
                   {status === 'all'
                     ? equipment.length
                     : equipment.filter(e => e.status.toLowerCase() === status).length}
@@ -67,26 +49,24 @@ export default function EquipmentPage() {
             ))}
           </div>
 
-          <button className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            맥주 주문
+          <button className="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm">
+            주문하기
           </button>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
           {filteredEquipment.map((item) => (
-            <div key={item.id} className="bg-white rounded-2xl p-5 shadow-sm">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{categoryIcons[item.category] || '🍺'}</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{item.name}</h3>
-                    <p className="text-sm text-gray-500">{item.style}</p>
-                  </div>
+            <div key={item.id} className="bg-white border border-gray-100 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-medium text-gray-900">{item.name}</h3>
+                  <p className="text-sm text-gray-500">{item.style}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                <span className={`text-xs px-2 py-1 rounded ${
+                  item.status === 'URGENT' ? 'bg-gray-900 text-white' :
+                  item.status === 'LOW' ? 'bg-gray-200 text-gray-700' :
+                  'bg-gray-100 text-gray-600'
+                }`}>
                   {getStatusText(item.status)}
                 </span>
               </div>
@@ -94,14 +74,11 @@ export default function EquipmentPage() {
               <div className="mb-4">
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-gray-500">재고량</span>
-                  <span className="font-medium text-gray-900">{item.stockLevel}%</span>
+                  <span className="text-gray-900">{item.stockLevel}%</span>
                 </div>
-                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${
-                      item.stockLevel > 50 ? 'bg-green-500' :
-                      item.stockLevel > 20 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}
+                    className="h-full bg-gray-900 rounded-full transition-all"
                     style={{ width: `${item.stockLevel}%` }}
                   />
                 </div>
@@ -115,7 +92,7 @@ export default function EquipmentPage() {
               </div>
 
               {item.status === 'URGENT' && (
-                <button className="w-full mt-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors">
+                <button className="w-full mt-4 bg-gray-900 text-white py-2 rounded-lg text-sm">
                   긴급 주문
                 </button>
               )}

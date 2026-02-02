@@ -56,106 +56,83 @@ const marketingAssets = [
 export default function MarketingPage() {
   const partner = mockPartner
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-700'
-      case 'scheduled': return 'bg-blue-100 text-blue-700'
-      case 'ended': return 'bg-gray-100 text-gray-700'
-      default: return 'bg-gray-100 text-gray-700'
-    }
-  }
-
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return '진행 중'
+      case 'active': return '진행중'
       case 'scheduled': return '예정'
       case 'ended': return '종료'
       default: return status
     }
   }
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'discount': return '🏷️'
-      case 'bundle': return '📦'
-      case 'event': return '🎉'
-      case 'reward': return '🎁'
-      default: return '📢'
-    }
-  }
-
   return (
     <>
-      <PartnerHeader title="공동 마케팅" partnerName={partner.name} />
+      <PartnerHeader title="마케팅" partnerName={partner.name} />
 
       <main className="flex-1 p-6 overflow-auto">
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-5 text-white">
-            <p className="text-sm opacity-90 mb-1">진행 중인 캠페인</p>
-            <p className="text-3xl font-bold">2</p>
+          <div className="bg-gray-900 rounded-xl p-4 text-white">
+            <p className="text-sm opacity-70 mb-1">진행중 캠페인</p>
+            <p className="text-2xl font-semibold">2</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">총 참여 고객</p>
-            <p className="text-2xl font-bold text-gray-900">450명</p>
+          <div className="bg-white border border-gray-100 rounded-xl p-4">
+            <p className="text-sm text-gray-500 mb-1">총 참여</p>
+            <p className="text-xl font-semibold text-gray-900">450명</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <div className="bg-white border border-gray-100 rounded-xl p-4">
             <p className="text-sm text-gray-500 mb-1">전환율</p>
-            <p className="text-2xl font-bold text-gray-900">34.6%</p>
+            <p className="text-xl font-semibold text-gray-900">34.6%</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">마케팅 크레딧</p>
-            <p className="text-2xl font-bold text-amber-500">150,000P</p>
+          <div className="bg-white border border-gray-100 rounded-xl p-4">
+            <p className="text-sm text-gray-500 mb-1">크레딧</p>
+            <p className="text-xl font-semibold text-gray-900">150,000P</p>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-6">
           <div className="col-span-2">
-            <div className="bg-white rounded-2xl p-5 shadow-sm mb-6">
+            <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900">캠페인 현황</h3>
-                <button className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-amber-600 transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                <h3 className="font-semibold text-gray-900">캠페인</h3>
+                <button className="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm">
                   새 캠페인
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {campaigns.map((campaign) => (
-                  <div key={campaign.id} className="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3">
-                        <span className="text-2xl">{getTypeIcon(campaign.type)}</span>
-                        <div>
-                          <h4 className="font-medium text-gray-900">{campaign.title}</h4>
-                          <p className="text-sm text-gray-500">
-                            {campaign.startDate} ~ {campaign.endDate}
-                          </p>
-                        </div>
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
+                  <div key={campaign.id} className="border border-gray-100 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-gray-900">{campaign.title}</h4>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        campaign.status === 'active' ? 'bg-gray-900 text-white' :
+                        campaign.status === 'scheduled' ? 'bg-gray-200 text-gray-700' :
+                        'bg-gray-100 text-gray-500'
+                      }`}>
                         {getStatusText(campaign.status)}
                       </span>
                     </div>
+                    <p className="text-sm text-gray-500 mb-3">
+                      {campaign.startDate} ~ {campaign.endDate}
+                    </p>
 
                     {campaign.status !== 'scheduled' && (
-                      <div className="mt-4 flex gap-6">
+                      <div className="flex gap-6 text-sm">
                         <div>
-                          <p className="text-xs text-gray-500">참여자</p>
-                          <p className="font-medium text-gray-900">{campaign.participants}명</p>
+                          <span className="text-gray-500">참여 </span>
+                          <span className="text-gray-900">{campaign.participants}명</span>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500">전환</p>
-                          <p className="font-medium text-gray-900">{campaign.conversions}명</p>
+                          <span className="text-gray-500">전환 </span>
+                          <span className="text-gray-900">{campaign.conversions}명</span>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500">전환율</p>
-                          <p className="font-medium text-amber-500">
+                          <span className="text-gray-500">전환율 </span>
+                          <span className="text-gray-900">
                             {campaign.participants > 0
                               ? ((campaign.conversions / campaign.participants) * 100).toFixed(1)
                               : 0}%
-                          </p>
+                          </span>
                         </div>
                       </div>
                     )}
@@ -166,23 +143,18 @@ export default function MarketingPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
+            <div className="bg-white border border-gray-100 rounded-xl p-5">
               <h3 className="font-semibold text-gray-900 mb-4">마케팅 자료</h3>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {marketingAssets.map((asset) => (
-                  <div key={asset.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">
-                        {asset.type === 'print' ? '🖨️' : asset.type === 'digital' ? '📱' : '🎬'}
-                      </span>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{asset.name}</p>
-                        <p className="text-xs text-gray-500">{asset.downloads}회 다운로드</p>
-                      </div>
+                  <div key={asset.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="text-sm text-gray-900">{asset.name}</p>
+                      <p className="text-xs text-gray-500">{asset.downloads}회 다운로드</p>
                     </div>
-                    <button className="text-amber-500 hover:text-amber-600">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    <button className="text-gray-500 hover:text-gray-700">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
                     </button>
                   </div>
@@ -190,18 +162,11 @@ export default function MarketingPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-5 border border-amber-100">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xl">💡</span>
-                <h3 className="font-semibold text-amber-800">마케팅 팁</h3>
-              </div>
-              <p className="text-sm text-amber-700 mb-3">
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <h3 className="font-medium text-gray-900 mb-2">마케팅 팁</h3>
+              <p className="text-sm text-gray-600">
                 논알콜 맥주는 건강을 중시하는 고객에게 어필하기 좋습니다.
-                &quot;맛은 그대로, 알코올은 제로&quot; 메시지를 강조해보세요.
               </p>
-              <button className="text-sm text-amber-600 font-medium hover:text-amber-700">
-                자세히 보기 →
-              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { PartnerOrder } from '@/types'
-import { OrderStatusBadge } from '../shared/Badge'
+import { cn } from '@/lib/utils'
 
 interface OrderStatusListProps {
   orders: PartnerOrder[]
@@ -9,71 +9,62 @@ interface OrderStatusListProps {
   onViewAll?: () => void
 }
 
-const categoryIcons: Record<string, string> = {
-  LAGER: '🍺',
-  PILSNER: '🍻',
-  WHEAT: '🌾',
-  IPA: '🧡',
-  STOUT: '🖤',
-  ALE: '🍯',
+const statusLabels: Record<string, string> = {
+  PENDING: '대기',
+  PROCESSING: '처리중',
+  SHIPPED: '배송중',
+  DELIVERED: '완료',
+  CANCELLED: '취소',
 }
 
-export function OrderStatusList({ orders, title = '맥주 주문 현황', onViewAll }: OrderStatusListProps) {
+export function OrderStatusList({ orders, title = '최근 주문', onViewAll }: OrderStatusListProps) {
   const formatDate = (date: Date | undefined) => {
     if (!date) return '-'
     return new Date(date).toLocaleDateString('ko-KR', {
-      month: 'long',
+      month: 'short',
       day: 'numeric',
     })
   }
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm">
+    <div className="bg-white border border-gray-100 rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">📦</span>
-          <h3 className="font-semibold text-gray-800">{title}</h3>
-        </div>
+        <h3 className="font-semibold text-gray-900">{title}</h3>
         {onViewAll && (
           <button
             onClick={onViewAll}
-            className="text-sm text-amber-500 hover:text-amber-600 flex items-center gap-1"
+            className="text-sm text-gray-500 hover:text-gray-700"
           >
-            주문 내역
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            전체보기
           </button>
         )}
       </div>
-      <p className="text-sm text-gray-500 mb-4">최근 주문 및 배송 상태</p>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {orders.map((order) => {
           const firstItem = order.items[0]
           const productName = firstItem?.product.name || '상품'
-          const icon = categoryIcons[firstItem?.product.category] || '🍺'
 
           return (
             <div
               key={order.id}
-              className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+              className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
             >
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-xl shadow-sm">
-                {icon}
-              </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-800 truncate">{productName}</p>
-                <p className="text-sm text-gray-500">주문일: {formatDate(order.createdAt)}</p>
+                <p className="font-medium text-gray-900 text-sm truncate">{productName}</p>
+                <p className="text-xs text-gray-500">{formatDate(order.createdAt)}</p>
               </div>
-              <div className="flex flex-col items-end gap-1">
-                <OrderStatusBadge status={order.status} />
-                {order.estimatedDelivery && (
-                  <p className="text-xs text-gray-400">
-                    도착 예정: {formatDate(order.estimatedDelivery)}
-                  </p>
+              <span
+                className={cn(
+                  'text-[10px] px-1.5 py-0.5 rounded',
+                  order.status === 'DELIVERED' ? 'bg-gray-100 text-gray-600' :
+                  order.status === 'SHIPPED' ? 'bg-gray-200 text-gray-700' :
+                  order.status === 'CANCELLED' ? 'bg-gray-100 text-gray-400' :
+                  'bg-gray-900 text-white'
                 )}
-              </div>
+              >
+                {statusLabels[order.status]}
+              </span>
             </div>
           )
         })}
