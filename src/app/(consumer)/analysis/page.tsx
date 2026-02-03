@@ -48,7 +48,7 @@ export default function AnalysisPage() {
                 cx="32"
                 cy="32"
                 r="28"
-                stroke="#111827"
+                stroke="#0d9488"
                 strokeWidth="6"
                 fill="none"
                 strokeDasharray={`${(tasteScore / 100) * 176} 176`}
@@ -75,7 +75,7 @@ export default function AnalysisPage() {
                 style={{
                   height: maxBeers > 0 ? `${(data.beers / maxBeers) * 56}px` : '2px',
                   minHeight: data.beers > 0 ? '4px' : '2px',
-                  backgroundColor: data.beers === 0 ? '#e5e7eb' : '#111827',
+                  backgroundColor: data.beers === 0 ? '#e5e7eb' : '#0d9488',
                 }}
               />
               <span className="text-xs text-gray-500">{data.day}</span>
@@ -95,7 +95,7 @@ export default function AnalysisPage() {
               </div>
               <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gray-900 rounded-full transition-all"
+                  className="h-full bg-teal-600 rounded-full transition-all"
                   style={{ width: `${(item.value / 5) * 100}%` }}
                 />
               </div>

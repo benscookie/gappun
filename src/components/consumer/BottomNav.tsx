@@ -54,7 +54,7 @@ export function BottomNav() {
               href={item.href}
               className={cn(
                 'flex flex-col items-center gap-0.5 py-1 px-3 transition-colors',
-                isActive ? 'text-gray-900' : 'text-gray-400'
+                isActive ? 'text-teal-600' : 'text-gray-400'
               )}
             >
               {icons[item.icon](isActive)}

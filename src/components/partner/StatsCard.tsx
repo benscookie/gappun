@@ -39,7 +39,7 @@ export function StatsCard({
           <span
             className={cn(
               'text-xs',
-              change >= 0 ? 'text-gray-600' : 'text-gray-400'
+              change >= 0 ? 'text-teal-600' : 'text-gray-400'
             )}
           >
             {change >= 0 ? '+' : ''}{Math.abs(change)}%

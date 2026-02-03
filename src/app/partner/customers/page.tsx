@@ -64,7 +64,7 @@ export default function CustomersPage() {
                 placeholder="검색..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
             </div>
 
@@ -115,7 +115,7 @@ export default function CustomersPage() {
                   </div>
                   <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gray-900 rounded-full"
+                      className="h-full bg-teal-600 rounded-full"
                       style={{ width: `${item.percentage}%` }}
                     />
                   </div>

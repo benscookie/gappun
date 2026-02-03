@@ -44,7 +44,7 @@ export function RecommendationCard({ recommendations, message, onOrder }: Recomm
 
       <button
         onClick={onOrder}
-        className="w-full bg-gray-900 text-white font-medium py-3 rounded-xl hover:bg-gray-800 transition-colors"
+        className="w-full bg-teal-600 text-white font-medium py-3 rounded-xl hover:bg-teal-700 transition-colors"
       >
         주문하기
       </button>

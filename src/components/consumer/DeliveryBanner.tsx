@@ -19,7 +19,7 @@ export function DeliveryBanner({ deliveryDate, boxName = '맥주박스' }: Deliv
         </p>
         <p className="text-sm text-gray-500">배송 상품 확인 및 변경하기</p>
       </div>
-      <div className="bg-gray-900 text-white text-sm font-medium px-3 py-1.5 rounded-lg">
+      <div className="bg-teal-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg">
         D-{daysUntil}
       </div>
     </div>

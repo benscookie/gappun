@@ -100,7 +100,7 @@ export function Sidebar({ partnerName, isPro }: SidebarProps) {
     <aside className="w-56 bg-white border-r border-gray-100 min-h-screen flex flex-col">
       <div className="p-5 border-b border-gray-100">
         <Link href="/partner/dashboard" className="block">
-          <span className="text-lg font-bold text-gray-900">가뿐</span>
+          <span className="text-lg font-bold text-teal-600">가뿐</span>
           <span className="text-[10px] text-gray-400 ml-1.5">파트너</span>
         </Link>
       </div>

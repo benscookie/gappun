@@ -71,7 +71,7 @@ export default function MarketingPage() {
 
       <main className="flex-1 p-6 overflow-auto">
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-gray-900 rounded-xl p-4 text-white">
+          <div className="bg-teal-600 rounded-xl p-4 text-white">
             <p className="text-sm opacity-70 mb-1">진행중 캠페인</p>
             <p className="text-2xl font-semibold">2</p>
           </div>
@@ -94,7 +94,7 @@ export default function MarketingPage() {
             <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-900">캠페인</h3>
-                <button className="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm">
+                <button className="bg-teal-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-teal-700 transition-colors">
                   새 캠페인
                 </button>
               </div>

@@ -49,7 +49,7 @@ export default function EquipmentPage() {
             ))}
           </div>
 
-          <button className="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm">
+          <button className="bg-teal-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-teal-700 transition-colors">
             주문하기
           </button>
         </div>
@@ -92,7 +92,7 @@ export default function EquipmentPage() {
               </div>
 
               {item.status === 'URGENT' && (
-                <button className="w-full mt-4 bg-gray-900 text-white py-2 rounded-lg text-sm">
+                <button className="w-full mt-4 bg-teal-600 text-white py-2 rounded-lg text-sm hover:bg-teal-700 transition-colors">
                   긴급 주문
                 </button>
               )}

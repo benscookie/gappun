@@ -45,7 +45,7 @@ export default function OrdersPage() {
             ))}
           </div>
 
-          <button className="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm">
+          <button className="bg-teal-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-teal-700 transition-colors">
             새 주문
           </button>
         </div>

@@ -92,7 +92,7 @@ export default function SettlementPage() {
                     <span className={`text-xs px-2 py-1 rounded ${
                       settlement.status === 'completed'
                         ? 'bg-gray-100 text-gray-600'
-                        : 'bg-gray-900 text-white'
+                        : 'bg-teal-600 text-white'
                     }`}>
                       {settlement.status === 'completed' ? '완료' : '예정'}
                     </span>

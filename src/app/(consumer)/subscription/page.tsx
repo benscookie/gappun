@@ -27,7 +27,7 @@ export default function SubscriptionPage() {
           </div>
         </div>
         <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-gray-900 rounded-full" style={{ width: '60%' }} />
+          <div className="h-full bg-teal-600 rounded-full" style={{ width: '60%' }} />
         </div>
         <p className="text-xs text-gray-500 mt-2">다음 등급까지 40% 남았어요</p>
       </div>
@@ -79,25 +79,25 @@ export default function SubscriptionPage() {
           <p className="font-medium text-gray-900 mb-3">프리미엄 혜택</p>
           <ul className="text-sm text-gray-600 space-y-2">
             <li className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               한정판 논알콜 맥주 우선 제공
             </li>
             <li className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               무료 배송
             </li>
             <li className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               1:1 맥주 소믈리에 상담
             </li>
           </ul>
-          <button className="w-full mt-4 bg-gray-900 text-white py-3 rounded-xl font-medium">
+          <button className="w-full mt-4 bg-teal-600 text-white py-3 rounded-xl font-medium hover:bg-teal-700 transition-colors">
             프리미엄 시작하기
           </button>
         </div>
