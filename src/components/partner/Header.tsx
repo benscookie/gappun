@@ -19,9 +19,60 @@ export function PartnerHeader({ title, partnerName, date = new Date() }: Partner
     day: 'numeric',
   })
 
+  const generateReport = (type: string) => {
+    const today = new Date()
+    const dateStr = today.toISOString().split('T')[0]
+
+    let content = ''
+    let filename = ''
+
+    switch (type) {
+      case '일별 리포트':
+        content = `일별 리포트 - ${dateStr}\n\n판매량,매출,주문수\n150,450000,25`
+        filename = `일별리포트_${dateStr}.csv`
+        break
+      case '주별 리포트':
+        content = `주별 리포트 - ${dateStr}\n\n주차,판매량,매출,주문수\n1주차,1050,3150000,175\n2주차,980,2940000,163`
+        filename = `주별리포트_${dateStr}.csv`
+        break
+      case '월별 리포트':
+        content = `월별 리포트 - ${dateStr}\n\n월,판매량,매출,주문수\n1월,4200,12600000,700\n2월,3800,11400000,633`
+        filename = `월별리포트_${dateStr}.csv`
+        break
+      case '재고 현황':
+        content = `재고 현황 - ${dateStr}\n\n상품명,현재고,상태\n클라우드 제로,85%,정상\n하이네켄 0.0,45%,부족\n호가든 제로,15%,긴급`
+        filename = `재고현황_${dateStr}.csv`
+        break
+      case '주문 내역':
+        content = `주문 내역 - ${dateStr}\n\n주문번호,상품,수량,금액,상태\nORD-001,클라우드 제로,10,25000,배송완료\nORD-002,하이네켄 0.0,5,16000,배송중`
+        filename = `주문내역_${dateStr}.csv`
+        break
+      default:
+        content = `리포트 - ${dateStr}`
+        filename = `리포트_${dateStr}.csv`
+    }
+
+    return { content, filename }
+  }
+
   const handleDownload = (type: string) => {
     setShowDownloadMenu(false)
-    setDownloadSuccess(`${type} 다운로드가 시작되었습니다`)
+
+    const { content, filename } = generateReport(type)
+
+    // Create and download file
+    const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', filename)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    setDownloadSuccess(`${type} 다운로드 완료`)
     setTimeout(() => setDownloadSuccess(null), 2000)
   }
 

@@ -21,10 +21,13 @@ export default function SettlementPage() {
   const pendingAmount = settlements.filter(s => s.status === 'pending').reduce((sum, s) => sum + s.net, 0)
 
   const handleExcelDownload = () => {
+    // Filter by selected year
+    const filteredSettlements = settlements.filter(s => s.month.includes(selectedYear))
+
     // Create CSV content
     const headers = ['정산월', '매출', '수수료', '정산액', '상태', '지급일']
-    const rows = settlements.map(s => [
-      s.month,
+    const rows = filteredSettlements.map(s => [
+      `"${s.month}"`,
       s.sales.toString(),
       s.commission.toString(),
       s.net.toString(),
@@ -39,10 +42,15 @@ export default function SettlementPage() {
 
     // Create and download file
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = `정산내역_${selectedYear}.csv`
+    link.setAttribute('href', url)
+    link.setAttribute('download', `정산내역_${selectedYear}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
     link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
 
     setDownloadSuccess('정산 내역이 다운로드되었습니다')
     setTimeout(() => setDownloadSuccess(null), 2000)
