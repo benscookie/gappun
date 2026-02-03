@@ -15,13 +15,48 @@ const settlements = [
 export default function SettlementPage() {
   const partner = mockPartner
   const [selectedYear, setSelectedYear] = useState('2024')
+  const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null)
 
   const totalNet = settlements.filter(s => s.status === 'completed').reduce((sum, s) => sum + s.net, 0)
   const pendingAmount = settlements.filter(s => s.status === 'pending').reduce((sum, s) => sum + s.net, 0)
 
+  const handleExcelDownload = () => {
+    // Create CSV content
+    const headers = ['정산월', '매출', '수수료', '정산액', '상태', '지급일']
+    const rows = settlements.map(s => [
+      s.month,
+      s.sales.toString(),
+      s.commission.toString(),
+      s.net.toString(),
+      s.status === 'completed' ? '완료' : '예정',
+      s.paymentDate,
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n')
+
+    // Create and download file
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `정산내역_${selectedYear}.csv`
+    link.click()
+
+    setDownloadSuccess('정산 내역이 다운로드되었습니다')
+    setTimeout(() => setDownloadSuccess(null), 2000)
+  }
+
   return (
     <>
       <PartnerHeader title="정산" partnerName={partner.name} />
+
+      {downloadSuccess && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-4 py-3 rounded-xl text-sm">
+          {downloadSuccess}
+        </div>
+      )}
 
       <main className="flex-1 p-6 overflow-auto">
         <div className="grid grid-cols-4 gap-4 mb-6">
@@ -56,7 +91,13 @@ export default function SettlementPage() {
                 <option value="2024">2024년</option>
                 <option value="2023">2023년</option>
               </select>
-              <button className="text-sm text-gray-500 hover:text-gray-700">
+              <button
+                onClick={handleExcelDownload}
+                className="text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
                 엑셀 다운로드
               </button>
             </div>

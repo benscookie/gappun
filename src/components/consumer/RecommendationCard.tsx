@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { RecommendationItem } from '@/types'
 
 interface RecommendationCardProps {
@@ -13,7 +14,7 @@ export function RecommendationCard({ recommendations, message, onOrder }: Recomm
     <div className="bg-white border border-gray-100 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900">오늘의 추천</h3>
-        <button className="text-xs text-gray-500">전체보기</button>
+        <Link href="/store" className="text-xs text-teal-600 hover:text-teal-700">전체보기</Link>
       </div>
 
       <div className="space-y-3 mb-4">

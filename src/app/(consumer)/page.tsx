@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { CharacterAvatar } from '@/components/consumer/CharacterAvatar'
 import { MetricCard } from '@/components/consumer/MetricCard'
 import { mockDeliveryDate, mockRecommendations, mockTasteData, mockUser } from '@/data/mockData'
@@ -14,6 +15,12 @@ export default function ConsumerHomePage() {
   const [showOrderModal, setShowOrderModal] = useState(false)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
   const [orderComplete, setOrderComplete] = useState(false)
+  const [showProductChangeModal, setShowProductChangeModal] = useState(false)
+  const [showAddressChangeModal, setShowAddressChangeModal] = useState(false)
+  const [selectedProducts, setSelectedProducts] = useState<string[]>(recommendations.map(r => r.id))
+  const [address, setAddress] = useState({ address: '서울시 강남구 테헤란로 123', detail: '456호' })
+  const [tempAddress, setTempAddress] = useState(address)
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null)
 
   const daysUntil = getDaysUntil(deliveryDate)
   const month = deliveryDate.getMonth() + 1
@@ -60,7 +67,7 @@ export default function ConsumerHomePage() {
       <div className="bg-white border border-gray-100 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">오늘의 추천</h3>
-          <button className="text-xs text-gray-500">전체보기</button>
+          <Link href="/store" className="text-xs text-teal-600 hover:text-teal-700">전체보기</Link>
         </div>
 
         <div className="space-y-3 mb-4">
@@ -230,20 +237,172 @@ export default function ConsumerHomePage() {
 
               <h3 className="font-medium text-gray-900 mb-3">배송지</h3>
               <div className="bg-gray-50 p-4 rounded-xl mb-4">
-                <p className="text-sm text-gray-900">서울시 강남구 테헤란로 123</p>
-                <p className="text-sm text-gray-500">456호</p>
+                <p className="text-sm text-gray-900">{address.address}</p>
+                <p className="text-sm text-gray-500">{address.detail}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <button className="py-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors">
+                <button
+                  onClick={() => {
+                    setShowDeliveryModal(false)
+                    setShowProductChangeModal(true)
+                  }}
+                  className="py-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
                   상품 변경
                 </button>
-                <button className="py-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors">
+                <button
+                  onClick={() => {
+                    setTempAddress(address)
+                    setShowDeliveryModal(false)
+                    setShowAddressChangeModal(true)
+                  }}
+                  className="py-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
                   배송지 변경
                 </button>
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Product Change Modal */}
+      {showProductChangeModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="bg-white w-full rounded-t-2xl max-h-[80vh] flex flex-col">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900">배송 상품 변경</h2>
+              <button
+                onClick={() => setShowProductChangeModal(false)}
+                className="p-1 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-4 flex-1 overflow-auto">
+              <p className="text-sm text-gray-500 mb-4">배송받을 상품을 선택하세요</p>
+              <div className="space-y-2 mb-6">
+                {recommendations.map((item) => {
+                  const isSelected = selectedProducts.includes(item.id)
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedProducts(prev => prev.filter(id => id !== item.id))
+                        } else {
+                          setSelectedProducts(prev => [...prev, item.id])
+                        }
+                      }}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+                        isSelected ? 'border-teal-500 bg-teal-50' : 'border-gray-100 bg-gray-50'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded border flex items-center justify-center ${
+                        isSelected ? 'bg-teal-600 border-teal-600 text-white' : 'border-gray-300'
+                      }`}>
+                        {isSelected && (
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="font-medium text-gray-900">{item.name}</p>
+                        <p className="text-sm text-gray-500">{item.amount}</p>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <Link
+                href="/store"
+                className="block w-full py-3 border border-dashed border-gray-300 text-gray-500 rounded-xl text-sm text-center hover:border-gray-400 hover:text-gray-600 transition-colors mb-4"
+              >
+                + 다른 상품 추가하기
+              </Link>
+            </div>
+
+            <div className="p-4 border-t border-gray-100">
+              <button
+                onClick={() => {
+                  setShowProductChangeModal(false)
+                  setActionSuccess('배송 상품이 변경되었습니다')
+                  setTimeout(() => setActionSuccess(null), 2000)
+                }}
+                disabled={selectedProducts.length === 0}
+                className="w-full bg-teal-600 text-white py-3 rounded-xl font-medium hover:bg-teal-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                변경 완료 ({selectedProducts.length}개 선택)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Address Change Modal */}
+      {showAddressChangeModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="bg-white w-full rounded-t-2xl">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900">배송지 변경</h2>
+              <button
+                onClick={() => setShowAddressChangeModal(false)}
+                className="p-1 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">주소</label>
+                <input
+                  type="text"
+                  value={tempAddress.address}
+                  onChange={(e) => setTempAddress(prev => ({ ...prev, address: e.target.value }))}
+                  placeholder="주소를 입력하세요"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">상세 주소</label>
+                <input
+                  type="text"
+                  value={tempAddress.detail}
+                  onChange={(e) => setTempAddress(prev => ({ ...prev, detail: e.target.value }))}
+                  placeholder="상세 주소를 입력하세요"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
+
+              <button
+                onClick={() => {
+                  setAddress(tempAddress)
+                  setShowAddressChangeModal(false)
+                  setActionSuccess('배송지가 변경되었습니다')
+                  setTimeout(() => setActionSuccess(null), 2000)
+                }}
+                className="w-full bg-teal-600 text-white py-3 rounded-xl font-medium hover:bg-teal-700 transition-colors"
+              >
+                변경 완료
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {actionSuccess && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-4 py-3 rounded-xl text-sm">
+          {actionSuccess}
         </div>
       )}
     </div>
