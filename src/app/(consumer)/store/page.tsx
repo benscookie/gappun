@@ -83,6 +83,8 @@ const categoryLabels: Record<string, string> = {
 export default function StorePage() {
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [cart, setCart] = useState<{ id: string; quantity: number }[]>([])
+  const [showCart, setShowCart] = useState(false)
+  const [orderComplete, setOrderComplete] = useState(false)
 
   const filteredBeers = selectedCategory === '전체'
     ? beers
@@ -100,13 +102,45 @@ export default function StorePage() {
     })
   }
 
+  const removeFromCart = (beerId: string) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === beerId)
+      if (existing && existing.quantity > 1) {
+        return prev.map(item =>
+          item.id === beerId ? { ...item, quantity: item.quantity - 1 } : item
+        )
+      }
+      return prev.filter(item => item.id !== beerId)
+    })
+  }
+
+  const deleteFromCart = (beerId: string) => {
+    setCart(prev => prev.filter(item => item.id !== beerId))
+  }
+
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
+  const cartTotal = cart.reduce((sum, item) => {
+    const beer = beers.find(b => b.id === item.id)
+    return sum + (beer?.price || 0) * item.quantity
+  }, 0)
+
+  const handleOrder = () => {
+    setOrderComplete(true)
+    setTimeout(() => {
+      setOrderComplete(false)
+      setShowCart(false)
+      setCart([])
+    }, 2000)
+  }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 pb-20">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-900">스토어</h1>
-        <button className="relative p-2">
+        <button
+          className="relative p-2"
+          onClick={() => setShowCart(true)}
+        >
           <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
@@ -135,47 +169,185 @@ export default function StorePage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {filteredBeers.map(beer => (
-          <div key={beer.id} className="bg-white border border-gray-100 rounded-xl p-4">
-            <div className="relative mb-3">
-              <div className="w-full aspect-square bg-gray-50 rounded-lg flex items-center justify-center">
-                <span className="text-gray-300 text-sm">이미지</span>
-              </div>
-              {beer.isNew && (
-                <span className="absolute top-2 left-2 bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded">
-                  NEW
-                </span>
-              )}
-              {beer.originalPrice && (
-                <span className="absolute top-2 right-2 bg-gray-100 text-gray-600 text-[10px] px-1.5 py-0.5 rounded">
-                  {Math.round((1 - beer.price / beer.originalPrice) * 100)}%
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-gray-400 mb-0.5">{beer.abv}</p>
-            <h3 className="font-medium text-gray-900 text-sm">{beer.name}</h3>
-            <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{beer.description}</p>
-            <div className="mt-3 flex items-center justify-between">
-              <div>
-                {beer.originalPrice && (
-                  <span className="text-xs text-gray-400 line-through mr-1">
-                    {beer.originalPrice.toLocaleString()}
+        {filteredBeers.map(beer => {
+          const cartItem = cart.find(item => item.id === beer.id)
+          return (
+            <div key={beer.id} className="bg-white border border-gray-100 rounded-xl p-4">
+              <div className="relative mb-3">
+                <div className="w-full aspect-square bg-gray-50 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-300 text-sm">이미지</span>
+                </div>
+                {beer.isNew && (
+                  <span className="absolute top-2 left-2 bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded">
+                    NEW
                   </span>
                 )}
-                <span className="font-semibold text-gray-900">{beer.price.toLocaleString()}원</span>
+                {beer.originalPrice && (
+                  <span className="absolute top-2 right-2 bg-gray-100 text-gray-600 text-[10px] px-1.5 py-0.5 rounded">
+                    {Math.round((1 - beer.price / beer.originalPrice) * 100)}%
+                  </span>
+                )}
               </div>
+              <p className="text-xs text-gray-400 mb-0.5">{beer.abv}</p>
+              <h3 className="font-medium text-gray-900 text-sm">{beer.name}</h3>
+              <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{beer.description}</p>
+              <div className="mt-3 flex items-center justify-between">
+                <div>
+                  {beer.originalPrice && (
+                    <span className="text-xs text-gray-400 line-through mr-1">
+                      {beer.originalPrice.toLocaleString()}
+                    </span>
+                  )}
+                  <span className="font-semibold text-gray-900">{beer.price.toLocaleString()}원</span>
+                </div>
+                {cartItem ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => removeFromCart(beer.id)}
+                      className="w-6 h-6 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      </svg>
+                    </button>
+                    <span className="w-5 text-center text-sm font-medium">{cartItem.quantity}</span>
+                    <button
+                      onClick={() => addToCart(beer.id)}
+                      className="w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center hover:bg-teal-700 transition-colors"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => addToCart(beer.id)}
+                    className="w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center hover:bg-teal-700 transition-colors"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Cart Bottom Bar */}
+      {cartCount > 0 && !showCart && (
+        <div className="fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-100">
+          <button
+            onClick={() => setShowCart(true)}
+            className="w-full bg-teal-600 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-teal-700 transition-colors"
+          >
+            <span>장바구니 보기</span>
+            <span className="bg-white/20 px-2 py-0.5 rounded text-sm">
+              {cartTotal.toLocaleString()}원
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* Cart Modal */}
+      {showCart && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="bg-white w-full rounded-t-2xl max-h-[80vh] flex flex-col">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900">장바구니</h2>
               <button
-                onClick={() => addToCart(beer.id)}
-                className="w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center hover:bg-teal-700 transition-colors"
+                onClick={() => setShowCart(false)}
+                className="p-1 text-gray-400 hover:text-gray-600"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
+
+            {orderComplete ? (
+              <div className="flex-1 flex flex-col items-center justify-center py-12">
+                <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="text-lg font-semibold text-gray-900">주문이 완료되었습니다</p>
+                <p className="text-sm text-gray-500 mt-1">배송 정보는 마이페이지에서 확인하세요</p>
+              </div>
+            ) : cart.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center py-12">
+                <svg className="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <p className="text-gray-500">장바구니가 비어있습니다</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex-1 overflow-auto p-4 space-y-3">
+                  {cart.map(item => {
+                    const beer = beers.find(b => b.id === item.id)
+                    if (!beer) return null
+                    return (
+                      <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div className="w-16 h-16 bg-white border border-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <span className="text-gray-300 text-xs">이미지</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 text-sm">{beer.name}</p>
+                          <p className="text-sm text-gray-500">{beer.price.toLocaleString()}원</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="w-7 h-7 bg-white border border-gray-200 text-gray-600 rounded-full flex items-center justify-center"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            </svg>
+                          </button>
+                          <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
+                          <button
+                            onClick={() => addToCart(item.id)}
+                            className="w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => deleteFromCart(item.id)}
+                          className="p-1 text-gray-400 hover:text-gray-600"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="p-4 border-t border-gray-100 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500">총 {cartCount}개</span>
+                    <span className="text-lg font-semibold text-gray-900">{cartTotal.toLocaleString()}원</span>
+                  </div>
+                  <button
+                    onClick={handleOrder}
+                    className="w-full bg-teal-600 text-white py-3 rounded-xl font-medium hover:bg-teal-700 transition-colors"
+                  >
+                    주문하기
+                  </button>
+                </div>
+              </>
+            )}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
